@@ -33,6 +33,11 @@ function download(data, filename) {
     hiddenLink.click();
 }
 
+function round(value, decimals) {
+    var powTen = Math.pow(10, decimals);
+    return Math.round(value*powTen)/powTen;
+}
+
 var domReady = function(callback) {
     var ready = false;
 
