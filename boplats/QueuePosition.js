@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Boplats queue place
-// @namespace    https://github.com/Miicroo/boplats/blob/master/
+// @namespace    https://github.com/Miicroo/TamperMonkey/tree/master/boplats
 // @version      1.0
 // @description  Shows queue position on pending apartments.
 // @author       Micro
@@ -8,6 +8,7 @@
 // @grant        none
 // @copyright    2015+, Micro
 // @require      http://code.jquery.com/jquery-latest.js
+// @require      https://raw.githubusercontent.com/Miicroo/TamperMonkey/master/common/common.js
 // ==/UserScript==
 
 $(document).ready(function() {
@@ -62,11 +63,4 @@ function getColor(queueInfo) {
     }
     
     return "#000000"; // Cant reach here
-}
-
-function guid() {
-    function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-    }
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +s4() + '-' + s4() + s4() + s4();
 }
