@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name Lifesum data retriever
-// @namespace https://github.com/Miicroo/lifesum/blob/master/
+// @namespace https://github.com/Miicroo/TamperMonkey/tree/master/lifesum
 // @version 1.0
 // @description Retrieves diet data from lifesum.
 // @author Miicroo
@@ -8,16 +8,10 @@
 // @grant none
 // @copyright 2015+, Micro
 // @require http://code.jquery.com/jquery-latest.js
+// @require https://raw.githubusercontent.com/Miicroo/TamperMonkey/master/common/common.js
 // ==/UserScript==
 
 $(document).ready(function() {
-    Date.prototype.yyyymmdd = function() {
-        var yyyy = this.getFullYear().toString();
-        var mm = (this.getMonth()+1).toString(); // getMonth() is zero-based
-        var dd = this.getDate().toString();
-        return yyyy + '-' + (mm[1]?mm:"0"+mm[0]) + '-' + (dd[1]?dd:"0"+dd[0]); // padding
-    };
-	
     if(isLoggedIn()) {
         addInput();
     }
@@ -28,7 +22,7 @@ function isLoggedIn() {
 }
 
 function addInput() {
-    var container = $('body')[0]; //$('ul', $('.header-right')[0].innerHTML)[0];
+    var container = $('body')[0];
 	
     var startDate = '<input type="text" value="2015-01-01" id="startDate" />';
     var endDate = '<input type="text" value="'+((new Date()).yyyymmdd())+'" id="endDate" />';
@@ -58,21 +52,6 @@ function retrieveData() {
     }
 }
 
-function generateGuidList(listLength) {
-    guids = [];
-    for(i = 0; i<listLength; i++) {
-        guids.push(guid());
-    }
-    return guids;
-}
-
-function guid() {
-    function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-    }
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +s4() + '-' + s4() + s4() + s4();
-}
-
 function getData(date, uuid) {
     $.get('/webapi/v1/diary/day/'+date, function(data) {
         // Data arrives as JavaScript object!
@@ -90,7 +69,7 @@ function getData(date, uuid) {
         }
         
         if(window.guids.length == 0) {
-            download(JSON.stringify(window.responseData)); // Download data as JSON
+            download(JSON.stringify(window.responseData), 'lifesumData.json'); // Download data as JSON
         }
     });
 }
@@ -99,13 +78,4 @@ function flagAsRead(uuid) {
     window.guids = window.guids.filter(function (el) {
         return el !== uuid;
     });
-}
-
-function download(data) {
-    var hiddenLink = document.createElement('a');
-
-    hiddenLink.href = 'data:attachment/text,' + encodeURI(data);
-    hiddenLink.target = '_blank';
-    hiddenLink.download = 'lifesumData.json';
-    hiddenLink.click();
 }
