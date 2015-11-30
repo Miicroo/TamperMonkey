@@ -1,3 +1,7 @@
+/**
+ * Common functionality for TamperMonkey scripts.
+ * Written as vanilla JS.
+ */
 Date.prototype.yyyymmdd = function() {
 	var yyyy = this.getFullYear().toString();
 	var mm = (this.getMonth()+1).toString(); // getMonth() is zero-based
