@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Boplats Sorter
-// @namespace    https://github.com/Miicroo/boplats/blob/master/
-// @version      0.1
+// @namespace    https://github.com/Miicroo/TamperMonkey/tree/master/boplats
+// @version      1.0
 // @description  Sorts the apartments that you didn't get by date.
 // @author       Micro
 // @match        https://nya.boplats.se/minsida/ansokta/past/1hand
