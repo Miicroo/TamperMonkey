@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Boplats read all messages
-// @namespace    https://github.com/Miicroo/boplats/blob/master/
+// @namespace    https://github.com/Miicroo/TamperMonkey/tree/master/boplats
 // @version      1.0
 // @description  Marks all messages in your Boplats inbox as read.
 // @author       Miicroo
@@ -8,6 +8,7 @@
 // @grant        none
 // @copyright    2015+, Micro
 // @require      http://code.jquery.com/jquery-latest.js
+// @require      https://raw.githubusercontent.com/Miicroo/TamperMonkey/master/common/common.js
 // ==/UserScript==
 
 $(document).ready(function() {
@@ -61,21 +62,6 @@ function getMessageLinks() {
     return msgLinks;
 }
 
-function generateGuidList(listLength) {
-    guids = [];
-    for(i = 0; i<listLength; i++) {
-        guids.push(guid());
-    }
-    return guids;
-}
-
-function guid() {
-    function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-    }
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +s4() + '-' + s4() + s4() + s4();
-}
-
 function read(msgUrl, uuid) {
     $.get(msgUrl, function(data) {
         // Here we have read the message
@@ -99,11 +85,6 @@ function flagAsRead(uuid) {
     window.guids = window.guids.filter(function (el) {
         return el !== uuid;
     });
-}
-
-function round(value, decimals) {
-    var powTen = Math.pow(10, decimals);
-    return Math.round(value*powTen)/powTen;
 }
 
 function updateProgress(percentage) {
