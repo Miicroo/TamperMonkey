@@ -12,17 +12,21 @@
 // ==/UserScript==
 
 $(document).ready(function() {
+    setTimeout(go, 5000); // wait for other content to finish loading
+});
+
+function go() {
     if(isLoggedIn()) {
         addInput();
     }
-});
+}
 
 function isLoggedIn() {
-	return $('.personalMenu-menu').length > 0;
+	return $('.header-member-profile').length > 0;
 }
 
 function addInput() {
-    var container = $('body')[0];
+    var container = $('.container')[0];
 	
     var startDate = '<input type="text" value="2015-01-01" id="startDate" />';
     var endDate = '<input type="text" value="'+((new Date()).yyyymmdd())+'" id="endDate" />';
