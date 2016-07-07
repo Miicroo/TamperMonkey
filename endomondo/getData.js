@@ -53,13 +53,11 @@ function retrieveData() {
 function getProfileId() {
     var profileId = '';
     var profilePattern = 'profile/';
-    var links = $('a', $('.personalMenu-menu')[0].innerHTML);
-    for(i = 0; i<links.length; i++) {
-        var index = links[i].href.indexOf(profilePattern);
-        if(index != -1) {
-            profileId = links[i].href.substring(index+profilePattern.length, links[i].href.length);
-            break;
-        }
+    var link = $('.header-member-profile-name')[0].href;
+    console.log(link);
+    var index = link.indexOf(profilePattern);
+    if(index != -1) {
+        profileId = link.substring(index+profilePattern.length, link.length);
     }
     
     return profileId;
