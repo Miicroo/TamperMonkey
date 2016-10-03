@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         nonstop2k upcoming MIDIs
-// @namespace    http://pphoenix.site11.com/
+// @namespace    https://github.com/Miicroo/TamperMonkey/tree/master/nonstop2k
 // @version      1.0
 // @description  Add data to upcoming MIDIs
 // @author       Micro
