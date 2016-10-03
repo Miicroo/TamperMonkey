@@ -58,7 +58,12 @@ function addColumns(classSelector) {
 function setInfoForIdFromUrl(id, url) {
     $.get(url, function(data) {
         var creator = getCreatorFromData(data);
-        $('#'+id).text(creator);
+        var aTag = document.createElement('a');
+        aTag.href = 'http://www.nonstop2k.com/member/'+creator;
+        aTag.target="_blank";
+        aTag.innerText = creator;
+        aTag.style.color = '#000000';
+        $('#'+id).append(aTag);
         if(hasHighlightColor(creator)) {
             $('#'+id).css('background-color', getHighlightColor(creator));
         }
