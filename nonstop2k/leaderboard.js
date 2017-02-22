@@ -86,7 +86,7 @@ function getUrls(data, selector) {
 
 function parseStatistics(midiUrls) {
     console.log('Parsing '+midiUrls.length+' MIDI pages...');
-    var statistics = {};
+    var statistics = [];
     parseStatistic(midiUrls, 0, statistics, new Date().getTime());
 }
 
@@ -95,12 +95,8 @@ function parseStatistic(midiUrls, index, statistics, startMillis) {
         showStatistics(statistics);
     } else {
         $.get(midiUrls[index], function (data) {
-            var creator = getCreatorFromData(data);
-            if(typeof(statistics[creator]) === 'undefined') {
-                statistics[creator] = 1;
-            } else {
-                statistics[creator] = statistics[creator]+1;
-            }
+            var info = getInfo(data);
+            statistics.push(info);
 
             var now = new Date().getTime();
             var diff = now-startMillis;
@@ -115,26 +111,65 @@ function parseStatistic(midiUrls, index, statistics, startMillis) {
 }
 
 function showStatistics(stats) {
-    var statsList = [];
-    var keys = Object.keys(stats);
-    console.log('Found '+keys.length+' different users, restructuring...');
-    for(var i = 0; i<keys.length; i++) {
-        var key = keys[i];
-        statsList.push({'name':key, 'count':stats[key]});
-    }
+    let lbFunc = "function createLeaderBoard(stats) {\n";
+    lbFunc += "const leaderboard = stats.reduce((res, current) => {\n";
+    lbFunc += "let creator = current.MIDImadeby;\n";
+    lbFunc += "if(res[creator]) {\n";
+    lbFunc += "res[creator]++;\n";
+    lbFunc += "} else {\n";
+    lbFunc += "res[creator] = 1;\n";
+    lbFunc += "}\n";
+    lbFunc += "return res;\n";
+    lbFunc += "}, {});\n";
+    lbFunc += "		\n";
+    lbFunc += "let statsList = [];\n";
+    lbFunc += "const keys = Object.keys(leaderboard);\n";
+    lbFunc += "for(let i = 0; i<keys.length; i++) {\n";
+    lbFunc += "let key = keys[i];\n";
+    lbFunc += "statsList.push({'name':key, 'count':leaderboard[key]});\n";
+    lbFunc += "}\n";
+    lbFunc += "\n";
+    lbFunc += "statsList = statsList.sort(function (a, b) {\n";
+    lbFunc += "return b.count-a.count;\n";
+    lbFunc += "});\n";
+    lbFunc += "\n";
+    lbFunc += "let output = '<table><tr><td>Ranking</td><td>Name</td><td>Number of MIDIs</td></tr>';\n";
+    lbFunc += "for(i = 0; i<statsList.length; i++) {\n";
+    lbFunc += "output += '<tr><td>'+(i+1)+'</td><td>'+statsList[i].name+'</td><td>'+statsList[i].count+'</td></tr>';\n";
+    lbFunc += "}\n";
+    lbFunc += "output += '</table>';\n";
+    lbFunc += "	\n";
+    lbFunc += "return output;\n";
+    lbFunc += "}\n";
 
-    console.log('Sorting statistics...');
-    statsList = statsList.sort(function (a, b) {
-        return b.count-a.count;
-    });
-
-    var output = '<html><head><title>Nonstop2k leaderboard</title></head><body><center><h2>Nonstop2k leaderboard</h2><table><tr><td>Ranking</td><td>Name</td><td>Number of MIDIs</td></tr>';
-    for(i = 0; i<statsList.length; i++) {
-        output += '<tr><td>'+(i+1)+'</td><td>'+statsList[i].name+'</td><td>'+statsList[i].count+'</td></tr>';
-    }
-    output += '</table></center></body></html>';
+    var output = '<html><head><title>Nonstop2k leaderboard</title></head><body><center><h2>Nonstop2k leaderboard</h2><div id="leaderboard"></div></center>';
+    output += '</table></center>';
+    output += '<script>';
+    output += 'var info='+stats.toSource()+';\n';
+    output += lbFunc;
+    output += 'document.getElementById("leaderboard").innerHTML=createLeaderBoard(info);\n';
+    output += '</script>';
+    output += '</body></html>';
 
     download(output, 'leaderboard.html');
+}
+
+function getInfo(data) {
+	var midiDiv = $('#midiInfo', data);
+	var dts = $('dt', midiDiv);
+	var dds = $('dd', midiDiv);
+
+	var obj = {};
+	for(var i = 0; i<dts.length; i++) {
+		var key = dts[i].textContent.replace(/ /g, '');
+		var value = dds[i].textContent;
+		obj[key] = value;
+	}
+
+	var pubDateFooter = $('.pubdatefooter', data)[0];
+	obj.publishDate = pubDateFooter.textContent.replace('Published on: ', '');
+
+	return obj;
 }
 
 function getCreatorFromData(data) {
