@@ -96,6 +96,8 @@ function highlightColors() {
     colors.frozensunrise = 'rgba(247, 229, 126, 0.8)';
     colors.AirbourneDE = 'rgba(226, 174, 252, 0.8)';
     colors['Teccam(AirbourneDE)'] = 'rgba(226, 174, 252, 0.8)';
+    colors['Teccam / Kilian G.'] = 'rgba(226, 174, 252, 0.8)';
+    colors['Teccam'] = 'rgba(226, 174, 252, 0.8)';
     colors.RevizorMedia = 'rgba(252, 174, 174, 0.8)';
     colors.ObserveDJ = 'rgba(174, 252, 183)';
     return colors;
