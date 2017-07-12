@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nonstop2k leaderboard
 // @namespace    https://github.com/Miicroo/TamperMonkey/tree/master/nonstop2k
-// @version      1.0
+// @version      2.0
 // @description  Leaderboard nonstop2k
 // @author       Micro
 // @match        *www.nonstop2k.com/midi-files/archive.php*
@@ -26,7 +26,7 @@ function downloadStatistics() {
     var pagination = $('.pagination').children(0);
     var paginationLen = pagination.length;
     var linkToLast = pagination[paginationLen-1].href;
-    var lastPageNum = getQueryVariable(linkToLast, 'p');
+    var lastPageNum = 20;//getQueryVariable(linkToLast, 'p');
     var links = generateLinks(lastPageNum);
     parseArchivePages(links);
 }
@@ -111,47 +111,7 @@ function parseStatistic(midiUrls, index, statistics, startMillis) {
 }
 
 function showStatistics(stats) {
-    let lbFunc = "function createLeaderBoard(stats) {\n";
-    lbFunc += "const leaderboard = stats.reduce((res, current) => {\n";
-    lbFunc += "let creator = current.MIDImadeby;\n";
-    lbFunc += "if(res[creator]) {\n";
-    lbFunc += "res[creator]++;\n";
-    lbFunc += "} else {\n";
-    lbFunc += "res[creator] = 1;\n";
-    lbFunc += "}\n";
-    lbFunc += "return res;\n";
-    lbFunc += "}, {});\n";
-    lbFunc += "		\n";
-    lbFunc += "let statsList = [];\n";
-    lbFunc += "const keys = Object.keys(leaderboard);\n";
-    lbFunc += "for(let i = 0; i<keys.length; i++) {\n";
-    lbFunc += "let key = keys[i];\n";
-    lbFunc += "statsList.push({'name':key, 'count':leaderboard[key]});\n";
-    lbFunc += "}\n";
-    lbFunc += "\n";
-    lbFunc += "statsList = statsList.sort(function (a, b) {\n";
-    lbFunc += "return b.count-a.count;\n";
-    lbFunc += "});\n";
-    lbFunc += "\n";
-    lbFunc += "let output = '<table><tr><td>Ranking</td><td>Name</td><td>Number of MIDIs</td></tr>';\n";
-    lbFunc += "for(i = 0; i<statsList.length; i++) {\n";
-    lbFunc += "output += '<tr><td>'+(i+1)+'</td><td>'+statsList[i].name+'</td><td>'+statsList[i].count+'</td></tr>';\n";
-    lbFunc += "}\n";
-    lbFunc += "output += '</table>';\n";
-    lbFunc += "	\n";
-    lbFunc += "return output;\n";
-    lbFunc += "}\n";
-
-    var output = '<html><head><title>Nonstop2k leaderboard</title></head><body><center><h2>Nonstop2k leaderboard</h2><div id="leaderboard"></div></center>';
-    output += '</table></center>';
-    output += '<script>';
-    output += 'var info='+stats.toSource()+';\n';
-    output += lbFunc;
-    output += 'document.getElementById("leaderboard").innerHTML=createLeaderBoard(info);\n';
-    output += '</script>';
-    output += '</body></html>';
-
-    download(output, 'leaderboard.html');
+    download(JSON.stringify(stats), 'nonstop2k.json');
 }
 
 function getInfo(data) {
@@ -161,13 +121,13 @@ function getInfo(data) {
 
 	var obj = {};
 	for(var i = 0; i<dts.length; i++) {
-		var key = dts[i].textContent.replace(/ /g, '');
+		var key = dts[i].textContent.replace(/ /g, '').toLowerCase();
 		var value = dds[i].textContent;
 		obj[key] = value;
 	}
 
 	var pubDateFooter = $('.pubdatefooter', data)[0];
-	obj.publishDate = pubDateFooter.textContent.replace('Published on: ', '');
+	obj.publishdate = pubDateFooter.textContent.replace('Published on: ', '');
 
 	return obj;
 }
