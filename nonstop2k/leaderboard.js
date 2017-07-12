@@ -91,7 +91,7 @@ function parseStatistics(midiUrls) {
 }
 
 function parseStatistic(midiUrls, index, statistics, startMillis) {
-    /*if(index == midiUrls.length) {
+    if(index == midiUrls.length) {
         showStatistics(statistics);
     } else {
         $.get(midiUrls[index], function (data) {
@@ -107,53 +107,21 @@ function parseStatistic(midiUrls, index, statistics, startMillis) {
 
             parseStatistic(midiUrls, index+1, statistics, startMillis);
         });
-    }*/
-
-    //Experimental:
-    var offset = 10;
-    for(var i = 0; i<midiUrls.length; i+=(offset+1)) {
-        for(var j = 0; j<Math.min(offset, midiUrls.length-(i+offset)); j++) {
-            $.get(midiUrls[i+j], function (data) {
-                var info = getInfo(data);
-                statistics.push(info);
-
-                var now = new Date().getTime();
-                var diff = now-startMillis;
-                var timePerFile = diff/(index+1);
-                var filesLeft = midiUrls.length-(i+j+1);
-                var etaLeft = (timePerFile*filesLeft)/1000;
-                console.log(index + ' MIDIs done... ETA: '+Math.round(etaLeft));
-                
-                if(i+j == midiUrls.length) {
-                    showStatistics(statistics);
-                }
-            });
-        }
-        $.ajax({
-            url : midiUrls[i+offset],
-            type : "get",
-            async: false,
-            success : function(data) {
-                var info = getInfo(data);
-                statistics.push(info);
-
-                var now = new Date().getTime();
-                var diff = now-startMillis;
-                var timePerFile = diff/(index+1);
-                var filesLeft = midiUrls.length-(i+offset+1);
-                var etaLeft = (timePerFile*filesLeft)/1000;
-                console.log(index + ' MIDIs done... ETA: '+Math.round(etaLeft));
-                
-                if(i+j == midiUrls.length) {
-                    showStatistics(statistics);
-                }
-            }
-        });
     }
 }
 
 function showStatistics(stats) {
-    download(JSON.stringify(stats), 'nonstop2k.json');
+    downloadLargeFile(JSON.stringify(stats), 'nonstop2k.json');
+}
+
+function downloadLargeFile(data, filename) {
+    var hiddenLink = document.createElement('a');
+    var blob = new Blob([data], { type: 'text/json' });
+
+    hiddenLink.href = URL.createObjectURL(blob);
+    hiddenLink.target = '_blank';
+    hiddenLink.download = filename;
+    hiddenLink.click();
 }
 
 function getInfo(data) {
