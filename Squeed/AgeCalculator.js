@@ -9,7 +9,21 @@
 // @require      http://code.jquery.com/jquery-latest.js
 // ==/UserScript==
 
-function notMain() {
+function addUI() {
+    const container = document.querySelector('.filter-container');
+    const buttonDiv = document.createElement('div');
+    buttonDiv.classList.add('narrow-by-container');
+    buttonDiv.classList.add('ma-h4');
+
+    const button = document.createElement('button');
+    button.innerText = 'Print squeed age data';
+    button.onclick = calculateAge;
+    buttonDiv.appendChild(button);
+    container.appendChild(buttonDiv);
+}
+
+
+function calculateAge() {
     loadSqueeders(() => {
         const profiles = getProfileLinks();
         window.numberOfSqueeders = profiles.length;
@@ -58,6 +72,7 @@ function parseProfile(profileLink) {
 
         if(window.numberOfParsedSqueeders >= window.numberOfSqueeders) {
             printData(window.squeedData);
+            delete window.squeedData;
         }
     });
 }
@@ -120,4 +135,4 @@ $('.button').click(function(){
 });*/
 }
 
-setTimeout(notMain, 7000);
+addUI();
