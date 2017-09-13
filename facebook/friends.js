@@ -117,7 +117,9 @@ function incrementFriends() {
     console.log(`${window.currentFriendCount} of ${window.maxFriendCount}`);
     if(window.currentFriendCount >= window.maxFriendCount) {
         const sortedFriends = window.friends.sort((f1,f2) => f1.name.toLowerCase().localeCompare(f2.name.toLowerCase()));
-        download(JSON.stringify(sortedFriends), 'friends.json');
+        const now = new Date();
+        const data = {'timestamp':now,'friends':sortedFriends};
+        download(JSON.stringify(data), 'friends.json');
     }
 }
 
