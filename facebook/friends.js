@@ -116,7 +116,14 @@ function incrementFriends() {
     window.currentFriendCount++;
     console.log(`${window.currentFriendCount} of ${window.maxFriendCount}`);
     if(window.currentFriendCount >= window.maxFriendCount) {
-        const sortedFriends = window.friends.sort((f1,f2) => f1.name.toLowerCase().localeCompare(f2.name.toLowerCase()));
+        const sortedFriends = window.friends.sort((f1,f2) => {
+            const diff = f1.name.toLowerCase().localeCompare(f2.name.toLowerCase());
+            if(diff !== 0) {
+                return diff;
+            } else {
+                return f1.link.toLowerCase().localeCompare(f2.link.toLowerCase());
+            }
+        });
         const now = new Date();
         const data = {'timestamp':now,'friends':sortedFriends};
         download(JSON.stringify(data), 'friends.json');
