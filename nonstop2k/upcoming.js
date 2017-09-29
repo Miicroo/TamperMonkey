@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         nonstop2k upcoming MIDIs
 // @namespace    https://github.com/Miicroo/TamperMonkey/tree/master/nonstop2k
-// @version      1.0
+// @version      2.0
 // @description  Add data to upcoming MIDIs
 // @author       Micro
-// @match        *www.nonstop2k.com/midi-files/upcoming/*
+// @match        *www.nonstop2k.com/midi-files/upcoming*
 // @grant        none
 // @copyright    2016+, Micro
 // @require      http://code.jquery.com/jquery-latest.js
@@ -12,11 +12,11 @@
 // ==/UserScript==
 
 $(document).ready(function() {
-    var selector = '.midi-table-hover'; // Selector that determines a row with song data
-
+    var selector = '.midiArchive > li'; // Selector that determines a row with song data
     var urls = getUrls(selector);
-    addHeaderColumn('Creator:');
-    var columnIds = addColumns(selector);
+
+    var columnSelector = selector; //'.midiBottomBar.archiveBottom'
+    var columnIds = addColumns(columnSelector);
 
     for(var i = 0; i<urls.length; i++) {
         setInfoForIdFromUrl(columnIds[i], urls[i]);
@@ -28,7 +28,7 @@ function getUrls(selector) {
     var rows = $(selector);
     for(var i = 0; i<rows.length; i++) {
         var aTags = $('a', rows[i]); // Get all <a>-tags in row
-        var theLink = (aTags[1]).href; // First link is to artist, second list is to song
+        var theLink = (aTags[0]).href; // First link is to artist, second list is to song
         urls.push(theLink);
     }
     return urls;
@@ -48,9 +48,14 @@ function addColumns(classSelector) {
         var uuid = guid();
         uuids.push(uuid);
 
-        var column = document.createElement('td');
+        var column = document.createElement('span');
         column.id = uuid;
-        rows[i].appendChild(column);
+        column.style.display='inline-block';
+        column.style.cssFloat = 'right';
+        column.style.lineHeight = '50px';
+        column.style.textTransform = 'uppercase';
+        column.style.verticalAlign = 'baseline';
+        rows[i].insertBefore(column, rows[i].children[3]);
     }
     return uuids;
 }
@@ -97,7 +102,7 @@ function highlightColors() {
     colors.AirbourneDE = 'rgba(226, 174, 252, 0.8)';
     colors['Teccam(AirbourneDE)'] = 'rgba(226, 174, 252, 0.8)';
     colors['Teccam / Kilian G.'] = 'rgba(226, 174, 252, 0.8)';
-    colors['Teccam'] = 'rgba(226, 174, 252, 0.8)';
+    colors.Teccam = 'rgba(226, 174, 252, 0.8)';
     colors.RevizorMedia = 'rgba(252, 174, 174, 0.8)';
     colors.ObserveDJ = 'rgba(174, 252, 183)';
     return colors;
