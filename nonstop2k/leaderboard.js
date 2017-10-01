@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nonstop2k leaderboard
 // @namespace    https://github.com/Miicroo/TamperMonkey/tree/master/nonstop2k
-// @version      2.0
+// @version      2.1
 // @description  Leaderboard nonstop2k
 // @author       Micro
 // @match        *www.nonstop2k.com/midi-files/archive.php*
@@ -12,14 +12,18 @@
 // ==/UserScript==
 
 $(document).ready(function() {
-    var container = $('#midi_index')[0];
+    var container = document.querySelector('#content');
+    const div = document.createElement('div');
+    div.style.borderTop = '1px solid #EFEFEF';
+    div.style.padding = '12px 0';
     var link = document.createElement('a');
     link.onclick = downloadStatistics;
     link.innerText = 'Get statistics';
     link.style.color = '#90c74f';
     link.style['text-decoration'] = 'underline';
     link.style.cursor = 'pointer';
-    container.insertBefore(link, container.children[5]);
+    div.appendChild(link);
+    container.insertBefore(div, document.querySelector('#sortArchive').nextSibling);
 });
 
 function downloadStatistics() {
@@ -68,18 +72,16 @@ function parseArchivePages(pageLinks) {
 function parseDataUrls(dataList) {
     var urls = [];
     for(var i = 0; i<dataList.length; i++) {
-        urls = urls.concat(getUrls(dataList[i], '.midi-table-hover'));
+        urls = urls.concat(getUrls(dataList[i], '.archiveImg'));
     }
     parseStatistics(urls);
 }
 
 function getUrls(data, selector) {
     var urls = [];
-    var rows = $(selector, data);
-    for(var i = 0; i<rows.length; i++) {
-        var aTags = $('a', rows[i]); // Get all <a>-tags in row
-        var theLink = (aTags[1]).href; // First link is to artist, second list is to song
-        urls.push(theLink);
+    const linkTags = $(selector, data);
+    for(var i = 0; i<linkTags.length; i++) {
+        urls.push(linkTags[i].href);
     }
     return urls;
 }
@@ -136,7 +138,7 @@ function getInfo(data) {
         obj[key] = value;
     }
 
-    var pubDateFooter = $('.pubdatefooter', data)[0];
+    var pubDateFooter = $('.pubDate', data)[0];
     obj.publishdate = pubDateFooter.textContent.replace('Published on: ', '');
 
     return obj;
