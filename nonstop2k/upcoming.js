@@ -53,6 +53,7 @@ function addColumns(classSelector) {
         column.style.display='inline-block';
         column.style.cssFloat = 'right';
         column.style.lineHeight = '50px';
+        column.style.width = '125px';
         column.style.textTransform = 'uppercase';
         column.style.verticalAlign = 'baseline';
         rows[i].insertBefore(column, rows[i].children[3]);
