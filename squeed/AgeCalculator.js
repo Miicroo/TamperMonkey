@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Squeed age
 // @namespace    https://github.com/Miicroo/TamperMonkey/tree/master/squeed
-// @version      1.0
+// @version      1.1
 // @description  Squeed age
 // @author       Magnus Larsson
 // @match        *squeed.mangoapps.com/sites/peoples/people_directory
@@ -86,9 +86,8 @@ function parseBirthday(html) {
     const allNodes = Array.from(html.querySelectorAll('td'));
     const birthdayLabelIndex = allNodes.findIndex(td => td.textContent && td.textContent.indexOf('Födelsedag') !== -1);
     const birthday = allNodes[birthdayLabelIndex + 1].textContent.trim();
-    const birthdayAsDateStr = birthday.replace('/', '-').replace('/', '-') + 'T00:00:00';
 
-    return new Date(birthdayAsDateStr);
+    return new Date(Date.parse(birthday));
 }
 
 function getAge(birthday) {
@@ -111,10 +110,10 @@ function printData(data) {
     const avgAge = totalAge / hasAge.length;
 
     console.log('Squeeders by name: ');
-    console.log(sortedByName);
+    console.table(sortedByName);
 
     console.log('Squeeders by age: ');
-    console.log(sortedByAge);
+    console.table(sortedByAge);
 
     console.log(`Oldest squeeder: ${JSON.stringify(sortedByAge[0])}`);
     console.log(`Youngest squeeder: ${JSON.stringify(sortedByAge[sortedByAge.length-1])}`);
