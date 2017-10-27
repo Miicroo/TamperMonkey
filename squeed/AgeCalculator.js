@@ -7,6 +7,7 @@
 // @match        *squeed.mangoapps.com/sites/peoples/people_directory
 // @grant        nonechrome-extension://dhdgffkkebhmkfjojejmpbldmpobfkfo/layout/default/images/script_add.png
 // @require      http://code.jquery.com/jquery-latest.js
+// @require      https://raw.githubusercontent.com/Miicroo/TamperMonkey/master/common/common.js
 // ==/UserScript==
 
 function addUI() {
@@ -90,8 +91,8 @@ function parseBirthday(html) {
     return new Date(Date.parse(birthday));
 }
 
-function getAge(birthday) {
-    const now = new Date();
+function getAge(birthday, atDate) {
+    const now = atDate || new Date();
     let age = now.getFullYear()-birthday.getFullYear()-1;
     if(now.getMonth() > birthday.getMonth()) {
         age++;
@@ -119,19 +120,87 @@ function printData(data) {
     console.log(`Youngest squeeder: ${JSON.stringify(sortedByAge[sortedByAge.length-1])}`);
     console.log(`Average age: ${JSON.stringify(avgAge)}`);
 
-    downloadAsIcal(hasAge);
+    downloadAsIcal(hasAge, [2017,2018]);
 }
 
-function downloadAsIcal(birthdayArray) {
- /*   msgData1 = $('.start-time').text();
-msgData2 = $('.end-time').text();
-msgData3 = $('.Location').text();
+function downloadAsIcal(birthdayArray, yearsToExport) {
+    const events = [];
+    yearsToExport.forEach(year => {
+        const bdaysForYear = birthdayArray.map(bday => {
+            let bdayAtYear = new Date(bday.birthday.getTime());
+            bdayAtYear.setFullYear(year);
+            const bdayAtYearStr = formatAsYmd(bdayAtYear);
+            const description = `${bday.name} fyller ${getAge(bday.birthday, bdayAtYear)}`;
+            return {'date':bdayAtYearStr,'description':description};
+        });
+        events.push(...bdaysForYear);
+    });
 
-var icsMSG = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Squeed//NONSGML v1.0//EN\nBEGIN:VEVENT\nUID:magnus.larsson@squeed.com\nDTSTAMP:20120315T170000Z\nATTENDEE;CN=My Self ;RSVP=TRUE:MAILTO:me@gmail.com\nORGANIZER;CN=Me:MAILTO::me@gmail.com\nDTSTART:" + msgData1 +"\nDTEND:" + msgData2 +"\nLOCATION:" + msgData3 + "\nSUMMARY:Our Meeting Office\nEND:VEVENT\nEND:VCALENDAR";
+    const calendar = createCalendar(events);
+    download(calendar, 'squeed.ics');
+}
 
-$('.button').click(function(){
-    window.open( "data:text/calendar;charset=utf8," + escape(icsMSG));
-});*/
+function formatAsYmd(dateInst) {
+    return `${dateInst.getFullYear()}${pad(dateInst.getMonth()+1)}${pad(dateInst.getDate())}`;
+}
+
+function formatIcsDateTime(date) {
+  const year = date.getUTCFullYear();
+  const month = pad(date.getUTCMonth() + 1);
+  const day = pad(date.getUTCDate());
+  const hour = pad(date.getUTCHours());
+  const minute = pad(date.getUTCMinutes());
+  const second = pad(date.getUTCSeconds());
+  return `${year}${month}${day}T${hour}${minute}${second}Z`;
+}
+
+function pad(i) {
+  return i < 10 ? `0${i}` : `${i}`;
+}
+
+function createCalendar(events) {
+  const iCalendarData = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//www.squeed.com//iCal Event Maker',
+    'CALSCALE:GREGORIAN',
+    'BEGIN:VTIMEZONE',
+    'TZID:Europe/Berlin',
+    'TZURL:http://tzurl.org/zoneinfo-outlook/Europe/Berlin',
+    'X-LIC-LOCATION:Europe/Berlin',
+    'BEGIN:DAYLIGHT',
+    'TZOFFSETFROM:+0100',
+    'TZOFFSETTO:+0200',
+    'TZNAME:CEST',
+    'DTSTART:19700329T020000',
+    'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU',
+    'END:DAYLIGHT',
+    'BEGIN:STANDARD',
+    'TZOFFSETFROM:+0200',
+    'TZOFFSETTO:+0100',
+    'TZNAME:CET',
+    'DTSTART:19701025T030000',
+    'RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU',
+    'END:STANDARD',
+    'END:VTIMEZONE'
+    ];
+    const eventData = events.map(e => parseEvent(e));
+
+    iCalendarData.push(...eventData);
+    iCalendarData.push('END:VCALENDAR');
+
+  	return iCalendarData.join('\r\n');
+}
+
+function parseEvent(event) {
+		return [
+    	'BEGIN:VEVENT',
+    	'DTSTAMP:' + formatIcsDateTime(new Date()),
+    	'UID:' + guid() + '@squeed.com',
+    	'DTSTART;VALUE=DATE:' + event.date,
+    	'SUMMARY:' + event.description,
+    	'END:VEVENT'
+      ].join('\r\n');
 }
 
 addUI();
