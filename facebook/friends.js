@@ -11,7 +11,7 @@
 // ==/UserScript==
 
 function addUI() {
-    const container = document.querySelector('._4-rr._69k._4-rv');
+    const container = document.querySelector('._4-rr._4-rv');
     const link = document.createElement('a');
     link.classList = '_42ft _4jy0 _4-rs _4-rt _4jy4 _517h _51sy'.split(' ');
     link.setAttribute('role', 'button');
