@@ -85,7 +85,7 @@ function parseName(html) {
 
 function parseBirthday(html) {
     const allNodes = Array.from(html.querySelectorAll('td'));
-    const birthdayLabelIndex = allNodes.findIndex(td => td.textContent && td.textContent.indexOf('Födelsedag') !== -1);
+    const birthdayLabelIndex = allNodes.findIndex(td => td.textContent && td.textContent.indexOf('Date of Birth') !== -1);
     const birthday = allNodes[birthdayLabelIndex + 1].textContent.trim();
 
     return new Date(Date.parse(birthday));
