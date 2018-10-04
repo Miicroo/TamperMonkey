@@ -62,14 +62,14 @@ function getChildIdToInsertAfter(url) {
 
 function setInfoForIdFromUrl(id, url) {
     $.get(url, function(data) {
-        const requestor = getRequestorFromData(data);
-        $(`#${id}`).text(requestor);
+        const requester = getRequesterFromData(data);
+        $(`#${id}`).text(requester);
     });
 }
 
-function getRequestorFromData(data) {
-    const requestor = $('#leftbox > p', data);
-    const requestorText = requestor.text();
-    const userId = requestorText.replace('This MIDI is requested by ', '').replace('.', '');
+function getRequesterFromData(data) {
+    const requester = $('#leftbox > p', data);
+    const requesterText = requester.text();
+    const userId = requesterText.replace('This MIDI is requested by ', '').replace('.', '');
     return userId;
 }
