@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Squeed age
 // @namespace    https://github.com/Miicroo/TamperMonkey/tree/master/squeed
-// @version      1.1
+// @version      1.2
 // @description  Squeed age
 // @author       Magnus Larsson
 // @match        *squeed.mangoapps.com/sites/peoples/people_directory
@@ -79,13 +79,13 @@ function parseProfile(profileLink) {
 }
 
 function parseName(html) {
-    const div = html.querySelector('.ma-h3.bold');
+    const div = html.querySelector('.ma-h1.bold.user-full-name');
     return div.textContent.trim();
 }
 
 function parseBirthday(html) {
-    const allNodes = Array.from(html.querySelectorAll('td'));
-    const birthdayLabelIndex = allNodes.findIndex(td => td.textContent && td.textContent.indexOf('Date of Birth') !== -1);
+    const allNodes = Array.from(html.querySelectorAll('div'));
+    const birthdayLabelIndex = allNodes.findIndex(div => div.textContent && div.textContent.indexOf('Date Of Birth') === 0);
     const birthday = allNodes[birthdayLabelIndex + 1].textContent.trim();
 
     return new Date(Date.parse(birthday));
