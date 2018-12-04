@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name         Jira background editor
 // @namespace    https://github.com/Miicroo/TamperMonkey/tree/master/atlassian-jira
-// @version      1.0
+// @version      1.0.1
 // @description  Changes the background color of your jira tasks. Tasks are found based on your avatar. Works for jira 6.4.
 // @author       Miicroo
 // @match        http://YOUR_JIRA_SERVER/secure/RapidBoard.jspa*
 // @grant        none
 // @require      https://raw.githubusercontent.com/Miicroo/TamperMonkey/master/common/common.js
 // ==/UserScript==
+
 
 
 domReady(function() {
@@ -19,7 +20,7 @@ function main() {
     if(username.length == 0) {
         username = getUsername(); // Fall back in case any other alternative failed
     }
-    
+
     markTasks(username);
 }
 
@@ -29,7 +30,7 @@ function shouldLoadUsernameFromHeader() {
 
 // Get default username
 function getUsername() {
-    return 'YOUR_USERNAME';
+    return 'Magnus Larsson (12)';
 }
 
 // Get new background color for tasks
@@ -51,15 +52,14 @@ function getUsernameFromHeader() {
 // Marks all tasks assigned to username
 function markTasks(username) {
     var searchPattern = 'Assignee: '+username;
-    
-    var tasks = document.getElementsByClassName("ghx-issue js-issue ghx-has-avatar"); // Find all tasks
-    for(i = 0; i<tasks.length; i++) {
+
+    var tasks = document.getElementsByClassName("js-issue"); // Find all tasks
+    for(var i = 0; i<tasks.length; i++) {
         var avatars = tasks[i].getElementsByClassName('ghx-avatar-img'); // Find user avatar
         if(avatars.length > 0) {
             if(avatars[0].hasAttribute('alt') && avatars[0].getAttribute('alt') == searchPattern) {
                 tasks[i].style.backgroundColor = getBgColor();
             }
-        }   
+        }
     }
 }
-
