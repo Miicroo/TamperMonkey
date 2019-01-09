@@ -71,10 +71,10 @@ function parseEvent(event) {
 
 domReady(() => {
     const events = Array.from(document.querySelectorAll('.schedule--day'))
-    .map((day,dayIndex) => Array.from(day.querySelectorAll('.schedule--time'))
+    .map((day,dayIndex) => Array.from(day.querySelectorAll('.schedule--slot'))
         .map(item => {
 
-        const time = item.querySelector('h3').innerText;
+        const time = item.parentElement.parentElement.querySelector('h3').innerText;
         const timeSplit = time.replace(/\./g, ':').split(' - ');
         const startTime = timeSplit[0];
         const endTime = timeSplit[1];
@@ -90,9 +90,9 @@ domReady(() => {
             endDate.setDate(endDate.getDate() + dayIndex);
         }
 
-        const room = item.querySelector('.schedule--slot .slot--room') ? item.querySelector('.schedule--slot .slot--room').innerText : '';
+        const room = item.querySelector('.slot--room') ? item.querySelector('.slot--room').innerText : '';
 
-        const contentNode = item.querySelector('.schedule--slot h4 a') || item.querySelector('.schedule--slot .slot--nontalk');
+        const contentNode = item.querySelector('h4 a') || item.querySelector('.slot--nontalk') || item.querySelectorAll('h4')[1];
         const content = contentNode.innerText;
 
         return {'startDate': startDate, 'endDate': endDate, 'room': room, 'content': content};
