@@ -46,7 +46,7 @@ function parse(container) {
         const node = container.childNodes[i];
 
         if (node.nodeName === 'B') {
-            currentThemeDay = new Date(`${dateFromSwedishDate(node.innerText)} ${getYear()}`).yyyymmdd().replace('-', '');
+            currentThemeDay = new Date(`${dateFromSwedishDate(node.innerText)} ${getYear()}`).yyyymmdd().replace(/-/g, '');
             themeDays[currentThemeDay] = [];
         } else if (node.nodeName === '#text') {
             const eventName = node.textContent.replace('*', '').trim();
@@ -99,7 +99,7 @@ function getIndexOfFirstNodeWithData(container) {
 function createDownloadLink(data) {
     const downloadLink = document.createElement('a');
     downloadLink.innerText = 'Download';
-    downloadLink.onclick = () => download(JSON.stringify(data), 'themeDays.json');
+    downloadLink.onclick = () => download(JSON.stringify(data), 'specialThemes.json');
 
     const downloadContainer = document.createElement('div');
     downloadContainer.appendChild(downloadLink);
