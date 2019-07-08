@@ -46,7 +46,7 @@ function parse(container) {
         const node = container.childNodes[i];
 
         if (node.nodeName === 'B') {
-            currentThemeDay = new Date(`${dateFromSwedishDate(node.innerText)} ${getYear()}`).yyyymmdd();
+            currentThemeDay = new Date(`${dateFromSwedishDate(node.innerText)} ${getYear()}`).yyyymmdd().replace('-', '');
             themeDays[currentThemeDay] = [];
         } else if (node.nodeName === '#text') {
             const eventName = node.textContent.replace('*', '').trim();
