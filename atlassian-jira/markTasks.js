@@ -4,7 +4,7 @@
 // @version      1.0.1
 // @description  Changes the background color of your jira tasks. Tasks are found based on your avatar. Works for jira 6.4.
 // @author       Miicroo
-// @match        http://YOUR_JIRA_SERVER/secure/RapidBoard.jspa*
+// @match        **/secure/RapidBoard.jspa*
 // @grant        none
 // @require      https://raw.githubusercontent.com/Miicroo/TamperMonkey/master/common/common.js
 // ==/UserScript==
