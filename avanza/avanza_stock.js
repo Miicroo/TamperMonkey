@@ -8,12 +8,14 @@
 // @require      https://raw.githubusercontent.com/Miicroo/TamperMonkey/master/common/common.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js
 // ==/UserScript==
 
 
 domReady(function() {
     getMainContainer().appendChild(modalStyling());
     getMainContainer().appendChild(createModal());
+    getMainContainer().appendChild(createCssLink('https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.css'));
     insertModalOpener(modalOpener());
 
     const modalContainer = getModalContainer();
@@ -28,9 +30,13 @@ function getMainContainer() {
 }
 
 function modalStyling() {
+    return createCssLink('https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css');
+}
+
+function createCssLink(url) {
     const styling = document.createElement('link');
     styling.setAttribute('rel', 'stylesheet');
-    styling.href = 'https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css';
+    styling.href = url;
     return styling;
 }
 
@@ -45,8 +51,23 @@ function createModal() {
     const contentDiv = document.createElement('div');
     contentDiv.id = getModalContainerId();
 
+    const copyButton = document.createElement('button');
+    copyButton.innerText = 'Copy';
+    copyButton.onclick = function() {
+        document.querySelector(`#${getOutputId()}`).select();
+        document.execCommand('copy');
+
+        if (window.getSelection) {
+            window.getSelection().removeAllRanges();
+        } else if (document.selection) {
+            document.selection.empty();
+        }
+        $.toast({text: 'Configuration copied', loader: false, hideAfter: 1000});
+    };
+
     haModal.appendChild(h2);
     haModal.appendChild(contentDiv);
+    haModal.appendChild(copyButton);
 
     return haModal;
 }
