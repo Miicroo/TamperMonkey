@@ -8,3 +8,5 @@ Demo:
   <img src="https://raw.githubusercontent.com/Miicroo/TamperMonkey/master/avanza/resources/demo.gif" alt="avanza_stock demo" width="1000px" height="500px"/>
 </p>
 
+## avanza_stock_from_my_stocks.js
+Same as *avanza_stock.js*, but instead of parsing a stock's page it parses your Account Overview and generates a config for all your owned stocks.
