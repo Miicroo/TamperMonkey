@@ -23,8 +23,6 @@ domReady(function() {
     modalContainer.appendChild(createOutput());
 
     updateUi([]);
-
-    console.log(getStockData());
 });
 
 function getMainContainer() {
