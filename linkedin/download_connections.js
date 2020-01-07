@@ -11,7 +11,7 @@
 // ==/UserScript==
 
 function addUI() {
-    const container = document.querySelector('.p4');
+    const container = document.querySelector('.mn-connections__actions-container.ph5.pb3');
     const link = document.createElement('a');
     link.classList = 'mn-wylo-promo__action-button link-without-visited-state button-secondary-medium ember-view'.split(' ');
     link.style.cursor = 'pointer';
