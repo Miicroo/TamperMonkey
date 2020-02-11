@@ -2,7 +2,7 @@
 // @name         Avanza dividend display
 // @namespace    https://github.com/Miicroo/TamperMonkey/tree/master/avanza
 // @version      1.0.0
-// @description  Shows the dvidend percent current year
+// @description  Shows the dividend percent current year
 // @author       Miicroo
 // @match        https://www.avanza.se/aktier/om-aktien.html/**
 // @grant        none
