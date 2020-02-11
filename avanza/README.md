@@ -10,3 +10,6 @@ Demo:
 
 ## avanza_stock_from_my_stocks.js
 Same as *avanza_stock.js*, but instead of parsing a stock's page it parses your Account Overview and generates a config for all your owned stocks.
+
+## avanza_dividend_display.js
+Shows the dividend percent this year as a table above the Utdelningar events
