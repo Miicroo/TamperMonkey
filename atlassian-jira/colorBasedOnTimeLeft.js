@@ -9,30 +9,29 @@
 // @require      https://raw.githubusercontent.com/Miicroo/TamperMonkey/master/common/common.js
 // ==/UserScript==
 
+
+
 domReady(function() {
     setTimeout(main, 3500); // Wait until board is loaded
 });
 
 function main() {
-    const timeLeft = getTotalTimeLeft() / getNumberOfIssues();
+    const timeLeft = getMaxTimeLeft();
     markTasks(timeLeft);
 }
 
 
-function getTotalTimeLeft() {
+function getMaxTimeLeft() {
     return getTimeLeft(document)
         .map(s => getSeconds(s))
-        .reduce((a,b) => a+b, 0);
+        .filter(seconds => seconds > 0)
+        .reduce((a,b) => Math.max(a, b), 0);
 }
 
 function getTimeLeft(container) {
     return Array.from(container.querySelectorAll('aui-badge[title="Remaining Time Estimate"]'))
                 .filter(x => !!x.innerText)
                 .map(x => x.innerText);
-}
-
-function getNumberOfIssues() {
-    return getTimeLeft(document).length;
 }
 
 function getSeconds(str) {
@@ -56,14 +55,16 @@ function getSeconds(str) {
     return seconds;
 }
 
-function markTasks(totalTimeLeft) {
+function markTasks(maxTimeLeft) {
     document.querySelectorAll('.js-issue').forEach(issue => {
         const timeLeftContainer = issue.querySelector('aui-badge[title="Remaining Time Estimate"]');
 
         if (timeLeftContainer && timeLeftContainer.innerText) {
             const timeLeft = getSeconds(timeLeftContainer.innerText);
 
-            issue.style.backgroundColor = getBgColor(timeLeft, totalTimeLeft);
+            if (timeLeft > 0) {
+                issue.style.backgroundColor = getBgColor(timeLeft, maxTimeLeft);
+            }
         }
     });
 }
