@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nonstop2k leaderboard
 // @namespace    https://github.com/Miicroo/TamperMonkey/tree/master/nonstop2k
-// @version      3.0
+// @version      3.1
 // @description  Leaderboard nonstop2k
 // @author       Micro
 // @match        *www.nonstop2k.com/midi-files/archive.php*
@@ -77,7 +77,9 @@ function parseArchivePage(pageLinks, index, siteMap) {
         if(siteMap.length >= pageLinks.length) {
             parseDataUrls(siteMap);
         } else {
-            parseArchivePage(pageLinks, index+1, siteMap);
+            setTimeout(function() {
+                parseArchivePage(pageLinks, index+1, siteMap);
+            }, 0);
         }
     });
 }
