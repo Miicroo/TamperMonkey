@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         nonstop2k leaderboard
 // @namespace    https://github.com/Miicroo/TamperMonkey/tree/master/nonstop2k
-// @version      2.1
+// @version      3.0
 // @description  Leaderboard nonstop2k
 // @author       Micro
 // @match        *www.nonstop2k.com/midi-files/archive.php*
@@ -12,10 +12,18 @@
 // ==/UserScript==
 
 $(document).ready(function() {
-    var container = document.querySelector('#content');
+    var container = document.querySelector('.midiMeta');
+    const lastElementInContainer = document.querySelector('#shareMidi');
+
+    const separator = document.createElement('span');
+    separator.classList.add('bulletSeparator');
+
+    container.insertBefore(separator, lastElementInContainer);
+
     const div = document.createElement('div');
     div.style.borderTop = '1px solid #EFEFEF';
     div.style.padding = '12px 0';
+
     var link = document.createElement('a');
     link.onclick = downloadStatistics;
     link.innerText = 'Get statistics';
@@ -23,7 +31,8 @@ $(document).ready(function() {
     link.style['text-decoration'] = 'underline';
     link.style.cursor = 'pointer';
     div.appendChild(link);
-    container.insertBefore(div, document.querySelector('#sortArchive').nextSibling);
+
+    container.insertBefore(div, lastElementInContainer);
 });
 
 function downloadStatistics() {
@@ -58,21 +67,25 @@ function generateLinks(lastPage) {
 
 function parseArchivePages(pageLinks) {
     console.log('Parsing '+pageLinks.length+' archive pages...');
-    var siteMap = [];
-    for(var i = 0; i<pageLinks.length; i++) {
-        $.get(pageLinks[i], function(data) {
-            siteMap.push(data);
-            if(siteMap.length >= pageLinks.length) {
-                parseDataUrls(siteMap);
-            }
-        });
-    }
+    parseArchivePage(pageLinks, 0, []);
+}
+
+function parseArchivePage(pageLinks, index, siteMap) {
+    console.log('Archive page ' + (index + 1));
+    $.get(pageLinks[index], function(data) {
+        siteMap.push(data);
+        if(siteMap.length >= pageLinks.length) {
+            parseDataUrls(siteMap);
+        } else {
+            parseArchivePage(pageLinks, index+1, siteMap);
+        }
+    });
 }
 
 function parseDataUrls(dataList) {
     var urls = [];
     for(var i = 0; i<dataList.length; i++) {
-        urls = urls.concat(getUrls(dataList[i], '.archiveImg'));
+        urls = urls.concat(getUrls(dataList[i], '.coverImg'));
     }
     parseStatistics(urls);
 }
@@ -93,7 +106,7 @@ function parseStatistics(midiUrls) {
 }
 
 function parseStatistic(midiUrls, index, statistics, startMillis) {
-    if(index == midiUrls.length) {
+    if(index === midiUrls.length) {
         showStatistics(statistics);
     } else {
         $.get(midiUrls[index], function (data) {
@@ -127,31 +140,63 @@ function downloadLargeFile(data, filename) {
 }
 
 function getInfo(data) {
-    var midiDiv = $('#midiInfo', data);
-    var dts = $('dt', midiDiv);
-    var dds = $('dd', midiDiv);
 
-    var obj = {};
-    for(var i = 0; i<dts.length; i++) {
-        var key = dts[i].textContent.replace(/ /g, '').toLowerCase();
-        var value = dds[i].textContent;
-        obj[key] = value;
-    }
+    const dataObjects = [
+        getTrackInfo(data),
+        getInfoFromDataTable(data),
+        getPublishDate(data),
+        getLabel(data),
+        getCreator(data)
+    ];
 
-    var pubDateFooter = $('.pubDate', data)[0];
-    obj.publishdate = pubDateFooter.textContent.replace('Published on: ', '');
-
-    return obj;
+    return mergeListToObject(dataObjects);
 }
 
-function getCreatorFromData(data) {
-    var dlList = $('dl', data);
-    // <dl>s contain two children, first is key, second is value
-    for(var i = 0; i<dlList.length; i++) {
-        var dl = dlList[i];
-        if(dl.children[0].innerText == 'MIDI made by') {
-            return dl.children[1].innerText;
-        }
-    }
-    return undefined;
+function getTrackInfo(data) {
+    const selector = $('.secContainer > h1', data);
+    const trackData = selector[0].innerHTML.split('<br>');
+
+    return {'artist': trackData[0], 'tracktitle': trackData[1].replace('MIDI', '').trim()};
+}
+
+function getInfoFromDataTable(data) {
+    const midiDiv = $('#midifeatures', data);
+    const dts = $('dt', midiDiv);
+    const dds = $('dd', midiDiv);
+    const dtMapping = {'tempo': 'bpm'};
+
+    const mappedObjects = dts.map((index, dt) => { // jQuery uses index first
+        const lowerCaseKey = dt.textContent.replace(/ /g, '').toLowerCase();
+        const key = dtMapping[lowerCaseKey] || lowerCaseKey;
+        const value = dds[index].textContent;
+        const endOfValue = value.indexOf('\n') !== -1 ? value.indexOf('\n') : value.length;
+        const formattedValue = value.substring(0, endOfValue);
+
+        return {[key]: formattedValue};
+    }).toArray();
+
+    return mergeListToObject(mappedObjects);
+}
+
+function getPublishDate(data) {
+    const publishDate = $('.pubDate', data)[0].textContent.replace('Released: ', '');
+    return {'publishdate': publishDate};
+}
+
+function getLabel(data) {
+    const labelSelector = $('#midiLabel', data);
+    const label = labelSelector.length > 0 ? labelSelector[0].textContent : '';
+    return {'label': label};
+}
+
+function getCreator(data) {
+    const creatorSelector = $('#midiCreator', data);
+    const creatorText = creatorSelector.length > 0 ? creatorSelector[0].textContent : 'Anonymous';
+    const endOfCreator = creatorText.indexOf('.') !== -1 ? creatorText.lastIndexOf('.') : creatorText.length;
+    const creator = creatorText.substring(0, endOfCreator);
+    return {'midimadeby': creator};
+}
+
+function mergeListToObject(objectList) {
+    return Object.assign({}, ...objectList);
 }
