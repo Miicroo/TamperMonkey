@@ -12,5 +12,5 @@ const hasSearchQuery = window.location.href.indexOf('?') !== -1;
 const hasSortOrder = window.location.href.indexOf('sortOrder') !== -1;
 
 if (hasSearchQuery && !hasSortOrder) {
-    window.location.href += `&sortOrder=Pris%20lågt-högt`;
+    window.location.href += `&sortOrder=Jfr%20Pris%20lågt-högt`;
 }
