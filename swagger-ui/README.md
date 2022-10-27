@@ -1,7 +1,4 @@
 # swagger-ui
-swagger-ui tampermonkey scripts.
-
-Currently only one working script:  
 
 *automatic_auth.js*: Automatically sets the authorization bearer so you don't have to do it yourself on each reload. Set the following parameters:
 * <your_swagger_ui_url>: The url (or regex) to your swagger-ui
