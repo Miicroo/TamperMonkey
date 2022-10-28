@@ -22,7 +22,7 @@ const inputTypesWithValueSetter = [
     window.HTMLTextAreaElement,
 ];
 
-setTimeout(authorize, 600);
+waitForDialogThenAuth();
 
 // Taken from https://stackoverflow.com/a/47409362/1137118
 function reactTriggerInputChange(node, value) {
@@ -36,9 +36,21 @@ function reactTriggerInputChange(node, value) {
     }
 };
 
+function getAuthDialogButton() {
+    return document.querySelector('.btn.authorize.unlocked');
+}
+
+function waitForDialogThenAuth() {
+    const authDialogButton = getAuthDialogButton();
+    if (document.querySelector('.btn.authorize.unlocked') === null) {
+        setTimeout(waitForDialogThenAuth, 100);
+    } else {
+        authorize();
+    }
+}
 
 function authorize() {
-    const authDialogButton = document.querySelector('.btn.authorize.unlocked');
+    const authDialogButton = getAuthDialogButton();
     authDialogButton.click();
 
     const authContainers = document.querySelectorAll('.auth-container');
